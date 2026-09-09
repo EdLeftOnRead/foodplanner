@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "foods": [],
+  "tags": [
+    { "id": "quick", "name": "Quick", "color": "#5B7B4F" },
+    { "id": "protein", "name": "Protein", "color": "#A85C32" }
+  ],
+  "plans": [],
+  "settings": {
+    "dailyTargets": { "calories": 2000, "protein": 150, "carbs": 225, "fat": 70 }
+  }
+}

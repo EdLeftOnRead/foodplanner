@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Larder</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥕</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div id="connect-gate" class="gate">
+    <div class="gate__card">
+      <h1>Larder</h1>
+      <p>A running list of foods and dishes you actually like, so meal planning stops starting from zero. It lives in a GitHub repo you own — this device just needs to connect to it.</p>
+      <p id="gate-loading" class="muted">Checking for a saved connection…</p>
+      <div id="gate-form-mount"></div>
+      <details class="gate__help">
+        <summary>First time here? What you need</summary>
+        <ol>
+          <li>A GitHub repository (any name) with GitHub Pages turned on.</li>
+          <li>A personal access token for that repo, with Contents set to read &amp; write.</li>
+          <li>Full step-by-step instructions are in this project's <code>README.md</code>.</li>
+        </ol>
+      </details>
+    </div>
+  </div>
+
+  <div id="app-shell" hidden>
+    <header class="topbar">
+      <span class="wordmark">Larder</span>
+      <nav class="tabs">
+        <button class="tab tab--active" data-tab="browse">Browse</button>
+        <button class="tab" data-tab="planner">Plan</button>
+        <button class="tab" data-tab="settings">Settings</button>
+      </nav>
+    </header>
+
+    <main>
+      <section id="view-browse" class="view">
+        <div class="browse-controls">
+          <input type="search" id="food-search" placeholder="Search your foods…" aria-label="Search foods" />
+          <button class="btn btn--primary" id="add-food-btn">+ Add food</button>
+        </div>
+        <div id="tag-filters" class="chip-row"></div>
+        <p id="food-empty" class="empty-state" hidden></p>
+        <div id="food-grid" class="food-grid"></div>
+      </section>
+
+      <section id="view-planner" class="view" hidden>
+        <div class="planner-grid">
+          <div class="planner-main">
+            <div class="planner-header">
+              <input type="text" id="plan-name" placeholder="Plan name (defaults to today)" />
+              <div class="planner-header__actions">
+                <button class="btn" id="plan-new">New</button>
+                <button class="btn" id="plan-add-food">+ Add food</button>
+                <button class="btn btn--primary" id="plan-save">Save plan</button>
+              </div>
+            </div>
+            <div id="plan-items" class="plan-items"></div>
+          </div>
+          <aside class="planner-side">
+            <h3>Running totals</h3>
+            <div id="plan-macros"></div>
+            <p id="plan-missing-note" class="muted small" hidden>Some foods here don't have nutrition info yet, so these totals are partial.</p>
+          </aside>
+        </div>
+        <h3 class="section-title">Saved plans</h3>
+        <div id="saved-plans" class="saved-plans"></div>
+      </section>
+
+      <section id="view-settings" class="view" hidden>
+        <h3 class="section-title">GitHub connection</h3>
+        <p id="connection-summary" class="muted"></p>
+        <div id="settings-connection"></div>
+        <button class="btn btn--danger btn--small" id="disconnect-btn">Disconnect this device</button>
+
+        <h3 class="section-title">Daily targets</h3>
+        <form id="targets-form" class="field field--grid4">
+          <label>Calories<input type="number" min="0" name="calories" /></label>
+          <label>Protein (g)<input type="number" min="0" name="protein" /></label>
+          <label>Carbs (g)<input type="number" min="0" name="carbs" /></label>
+          <label>Fat (g)<input type="number" min="0" name="fat" /></label>
+          <button type="submit" class="btn btn--primary">Save targets</button>
+        </form>
+
+        <h3 class="section-title">Tags</h3>
+        <button class="btn" id="add-tag-btn">+ New tag</button>
+        <div id="tag-list" class="tag-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="modal-root" class="modal">
+    <div class="modal__frame">
+      <button class="modal__close" aria-label="Close">✕</button>
+      <div class="modal__panel"></div>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
