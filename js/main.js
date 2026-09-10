@@ -1,7 +1,7 @@
 // main.js — wires the tabs together and decides whether to show the
 // "connect to GitHub" gate or the app itself.
 
-import { tryAutoConnect } from './state.js';
+import { state, tryAutoConnect, saveNow, onChange } from './state.js';
 import { initModalShell } from './modal.js';
 import { initBrowse, renderBrowse } from './browse.js';
 import { initPlanner, renderPlanner } from './planner.js';
@@ -23,6 +23,37 @@ function switchTab(tab) {
 function initTabs() {
   document.querySelectorAll('.tab').forEach((btn) => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+}
+
+function renderSaveBar() {
+  const btn = document.getElementById('save-btn');
+  const status = document.getElementById('save-status');
+  if (state.saving) {
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    status.textContent = '';
+    status.classList.remove('save-status--dirty');
+  } else if (state.dirty) {
+    btn.disabled = false;
+    btn.textContent = 'Save';
+    status.textContent = 'Unsaved changes';
+    status.classList.add('save-status--dirty');
+  } else {
+    btn.disabled = true;
+    btn.textContent = 'Save';
+    status.textContent = 'All changes saved';
+    status.classList.remove('save-status--dirty');
+  }
+}
+
+function initSaveBar() {
+  document.getElementById('save-btn').addEventListener('click', () => saveNow());
+  onChange(renderSaveBar);
+  window.addEventListener('beforeunload', (e) => {
+    if (!state.dirty) return;
+    e.preventDefault();
+    e.returnValue = '';
   });
 }
 
@@ -48,6 +79,7 @@ async function boot() {
   initBrowse();
   initPlanner();
   initSettings();
+  initSaveBar();
 
   const connected = await safeAutoConnect();
   document.getElementById('gate-loading').hidden = true;
@@ -56,6 +88,7 @@ async function boot() {
   } else {
     document.getElementById('gate-form-mount').appendChild(buildConnectionForm({ onConnected: showApp }));
   }
+  renderSaveBar();
 }
 
 boot();

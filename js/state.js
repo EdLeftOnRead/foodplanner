@@ -1,5 +1,6 @@
 // state.js — single in-memory copy of data.json, plus every mutation the UI needs.
-// Writes are serialized through one queue so two quick edits can't race each other.
+// Edits only touch memory (and a local draft, as a safety net) until saveNow()
+// pushes everything back to GitHub as one commit.
 
 import * as store from './github-store.js';
 import { uid, toast } from './utils.js';
@@ -10,24 +11,54 @@ export const state = {
   sha: null,
   connected: false,
   loading: false,
+  dirty: false,
+  saving: false,
+  version: 0,
 };
 
-let writeQueue = Promise.resolve();
+const listeners = new Set();
+export function onChange(fn) {
+  listeners.add(fn);
+}
+function notify() {
+  listeners.forEach((fn) => fn());
+}
 
-function queueWrite(message) {
-  // Chain off the previous write, but never let a prior failure poison the
-  // queue for writes that come after it.
-  const attempt = writeQueue
-    .catch(() => {})
-    .then(() => store.saveData(state.cfg, state.data, state.sha, message))
-    .then(({ sha }) => {
-      state.sha = sha;
-    });
-  writeQueue = attempt.catch(() => {});
-  return attempt.catch((err) => {
-    toast(`Sync failed: ${err.message}`, 'error');
-    throw err;
-  });
+// ---------------- local draft (survives a refresh before you hit Save) ----------------
+
+function draftKey(cfg) {
+  return `larder_draft_${cfg.owner}/${cfg.repo}`;
+}
+function persistDraft() {
+  if (!state.cfg) return;
+  try {
+    localStorage.setItem(draftKey(state.cfg), JSON.stringify({ baseSha: state.sha, data: state.data }));
+  } catch {
+    /* storage full/unavailable — draft is best-effort only */
+  }
+}
+function readDraft(cfg) {
+  try {
+    const raw = localStorage.getItem(draftKey(cfg));
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+function clearDraft() {
+  if (!state.cfg) return;
+  try {
+    localStorage.removeItem(draftKey(state.cfg));
+  } catch {
+    /* ignore */
+  }
+}
+
+function markDirty() {
+  state.dirty = true;
+  state.version += 1;
+  persistDraft();
+  notify();
 }
 
 export async function connect(cfg) {
@@ -40,11 +71,14 @@ export async function connect(cfg) {
 }
 
 export function disconnect() {
+  clearDraft();
   store.clearConfig();
   state.cfg = null;
   state.data = null;
   state.sha = null;
   state.connected = false;
+  state.dirty = false;
+  notify();
 }
 
 export async function tryAutoConnect() {
@@ -57,13 +91,53 @@ export async function tryAutoConnect() {
 
 export async function reload() {
   state.loading = true;
+  notify();
   try {
     const { data, sha } = await store.loadData(state.cfg);
-    state.data = migrateData(data);
-    state.sha = sha;
+    const draft = readDraft(state.cfg);
     state.connected = true;
+    if (draft && draft.baseSha === sha) {
+      // Picking back up where a previous unsaved session left off.
+      state.data = draft.data;
+      state.sha = sha;
+      state.dirty = true;
+    } else {
+      if (draft) {
+        clearDraft();
+        toast('Discarded unsaved local changes — the repo was updated elsewhere since then.', 'error');
+      }
+      state.data = migrateData(data);
+      state.sha = sha;
+      state.dirty = false;
+    }
   } finally {
     state.loading = false;
+    notify();
+  }
+}
+
+/** Pushes everything staged in memory back to GitHub as a single commit. */
+export async function saveNow() {
+  if (!state.dirty || state.saving) return;
+  state.saving = true;
+  notify();
+  const versionAtSave = state.version;
+  try {
+    const { sha } = await store.saveData(state.cfg, state.data, state.sha, 'Update Larder data');
+    state.sha = sha;
+    if (state.version === versionAtSave) {
+      state.dirty = false;
+      clearDraft();
+    } else {
+      // More edits landed while this save was in flight — still unsaved.
+      persistDraft();
+    }
+    toast('Saved to GitHub.', 'success');
+  } catch (err) {
+    toast(`Save failed: ${err.message}`, 'error');
+  } finally {
+    state.saving = false;
+    notify();
   }
 }
 
@@ -87,7 +161,7 @@ function migrateData(data) {
 
 // ---------------- Foods ----------------
 
-export function upsertFood(food, { silent } = {}) {
+export function upsertFood(food) {
   const now = new Date().toISOString();
   const idx = state.data.foods.findIndex((f) => f.id === food.id);
   if (idx === -1) {
@@ -95,18 +169,15 @@ export function upsertFood(food, { silent } = {}) {
   } else {
     state.data.foods[idx] = { ...state.data.foods[idx], ...food, updatedAt: now };
   }
-  return queueWrite(idx === -1 ? `Add food: ${food.name}` : `Update food: ${food.name}`).then(() => {
-    if (!silent) toast('Saved.', 'success');
-  });
+  markDirty();
 }
 
 export function deleteFood(id) {
-  const food = state.data.foods.find((f) => f.id === id);
   state.data.foods = state.data.foods.filter((f) => f.id !== id);
   state.data.plans.forEach((p) => {
     p.items = p.items.filter((i) => i.foodId !== id);
   });
-  return queueWrite(`Delete food: ${food ? food.name : id}`).then(() => toast('Deleted.', 'success'));
+  markDirty();
 }
 
 // ---------------- Tags ----------------
@@ -115,7 +186,7 @@ export function upsertTag(tag) {
   const idx = state.data.tags.findIndex((t) => t.id === tag.id);
   if (idx === -1) state.data.tags.push({ ...tag, id: tag.id || uid() });
   else state.data.tags[idx] = { ...state.data.tags[idx], ...tag };
-  return queueWrite(`Update tag: ${tag.name}`).then(() => toast('Tag saved.', 'success'));
+  markDirty();
 }
 
 export function deleteTag(id) {
@@ -123,7 +194,7 @@ export function deleteTag(id) {
   state.data.foods.forEach((f) => {
     f.tags = (f.tags || []).filter((t) => t !== id);
   });
-  return queueWrite('Delete tag').then(() => toast('Tag deleted.', 'success'));
+  markDirty();
 }
 
 // ---------------- Plans ----------------
@@ -136,17 +207,17 @@ export function upsertPlan(plan) {
   } else {
     state.data.plans[idx] = { ...state.data.plans[idx], ...plan, updatedAt: now };
   }
-  return queueWrite(`Save plan: ${plan.name}`).then(() => toast('Plan saved.', 'success'));
+  markDirty();
 }
 
 export function deletePlan(id) {
   state.data.plans = state.data.plans.filter((p) => p.id !== id);
-  return queueWrite('Delete plan').then(() => toast('Plan deleted.', 'success'));
+  markDirty();
 }
 
 // ---------------- Settings ----------------
 
 export function updateTargets(targets) {
   state.data.settings.dailyTargets = { ...state.data.settings.dailyTargets, ...targets };
-  return queueWrite('Update daily targets').then(() => toast('Targets saved.', 'success'));
+  markDirty();
 }
