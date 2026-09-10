@@ -3,21 +3,25 @@
   "foods": [
     {
       "id": "46c6ec57-1f6b-4ec1-8c4d-16a329ec8db2",
-      "name": "Banana",
+      "name": "Banana - 1",
       "type": "ingredient",
       "image": "images/5ccb3260-2041-4365-93a0-f62ecd51c905.jpg",
-      "tags": [],
+      "tags": [
+        "6c41ee03-9cf0-4090-b672-4dc1f6e1e01c"
+      ],
       "notes": "",
       "ingredients": [],
       "serving": {
-        "label": ""
+        "label": "~100"
       },
       "nutrition": {
         "calories": 105,
-        "protein": 1
+        "protein": 1,
+        "carbs": 26.9,
+        "fat": 0.4
       },
       "createdAt": "2026-09-10T00:20:40.869Z",
-      "updatedAt": "2026-09-10T00:20:40.869Z"
+      "updatedAt": "2026-09-10T00:21:48.025Z"
     }
   ],
   "tags": [
