@@ -81,7 +81,7 @@ deployed GitHub Pages URL.
                                        // not computed from ingredient prices (ingredients are free text,
                                        // not linked to other food entries, so there's nothing to sum).
       "serving": { "label": "1 burrito (350g)" },
-      "nutrition": { "calories": 650, "protein": 35, "carbs": 70, "fat": 22 }, // any/all optional
+      "nutrition": { "calories": 650, "protein": 35, "carbs": 70, "fat": 22, "sugar": 8, "addedSugar": 3 }, // any/all optional
       "createdAt": "ISO", "updatedAt": "ISO"
     }
   ],
@@ -99,6 +99,8 @@ deployed GitHub Pages URL.
 
 Nutrition values are per the `serving` defined on that food, not per 100g.
 Planner totals multiply each food's nutrition by the plan item's `qty`.
+`sugar`/`addedSugar` are shown in the food detail view only — deliberately
+excluded from the Planner's running totals/macro bars (explicit user ask).
 
 ## Known limitations / deliberate simplifications
 

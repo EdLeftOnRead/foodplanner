@@ -144,7 +144,7 @@ function openFoodDetail(id) {
             : ''
         }
         ${
-          n.calories != null || n.protein != null || n.carbs != null || n.fat != null
+          n.calories != null || n.protein != null || n.carbs != null || n.fat != null || n.sugar != null || n.addedSugar != null
             ? `<div class="detail__section">
                  <h4>Nutrition${food.serving && food.serving.label ? ` — ${escapeHtml(food.serving.label)}` : ''}</h4>
                  <div class="nutri-grid">
@@ -152,6 +152,8 @@ function openFoodDetail(id) {
                    ${nutritionRow('Protein', n.protein, 'g')}
                    ${nutritionRow('Carbs', n.carbs, 'g')}
                    ${nutritionRow('Fat', n.fat, 'g')}
+                   ${nutritionRow('Sugar', n.sugar, 'g')}
+                   ${nutritionRow('Added sugar', n.addedSugar, 'g')}
                  </div>
                </div>`
             : `<p class="detail__hint">No nutrition info yet — edit this to add it.</p>`
@@ -274,6 +276,8 @@ function openFoodForm(existing) {
         <label>Protein (g)<input type="number" min="0" step="0.1" name="protein" value="${food.nutrition?.protein ?? ''}" /></label>
         <label>Carbs (g)<input type="number" min="0" step="0.1" name="carbs" value="${food.nutrition?.carbs ?? ''}" /></label>
         <label>Fat (g)<input type="number" min="0" step="0.1" name="fat" value="${food.nutrition?.fat ?? ''}" /></label>
+        <label>Sugar (g)<input type="number" min="0" step="0.1" name="sugar" value="${food.nutrition?.sugar ?? ''}" /></label>
+        <label>Added sugar (g)<input type="number" min="0" step="0.1" name="addedSugar" value="${food.nutrition?.addedSugar ?? ''}" /></label>
       </div>
 
       <label class="field">
@@ -431,6 +435,8 @@ function openFoodForm(existing) {
           protein: num(fd.get('protein')),
           carbs: num(fd.get('carbs')),
           fat: num(fd.get('fat')),
+          sugar: num(fd.get('sugar')),
+          addedSugar: num(fd.get('addedSugar')),
         },
       };
       await upsertFood(payload);
