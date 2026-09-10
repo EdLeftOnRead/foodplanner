@@ -30,6 +30,11 @@
       "id": "protein",
       "name": "Protein",
       "color": "#A85C32"
+    },
+    {
+      "id": "6c41ee03-9cf0-4090-b672-4dc1f6e1e01c",
+      "name": "Snack",
+      "color": "#5B7B4F"
     }
   ],
   "plans": [],
