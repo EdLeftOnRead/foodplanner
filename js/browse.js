@@ -79,7 +79,7 @@ function renderGrid() {
         <div class="food-card__media">
           <div class="food-card__placeholder">${food.type === 'dish' ? '🍽' : '🥕'}</div>
           <img class="food-card__img" alt="" hidden />
-          ${food.price != null ? `<span class="food-card__price">$${food.price.toFixed(2)}</span>` : ''}
+          ${food.price != null ? `<span class="food-card__price">€${food.price.toFixed(2)}</span>` : ''}
         </div>
         <div class="food-card__body">
           <h3 class="food-card__name">${escapeHtml(food.name)}</h3>
@@ -129,7 +129,7 @@ function openFoodDetail(id) {
       </div>
       <div class="detail__body">
         <span class="badge">${food.type === 'dish' ? 'Dish' : 'Ingredient'}</span>
-        ${food.price != null ? `<span class="pill" style="--chip-color:var(--paprika)">$${food.price.toFixed(2)}</span>` : ''}
+        ${food.price != null ? `<span class="pill" style="--chip-color:var(--paprika)">€${food.price.toFixed(2)}</span>` : ''}
         <h2 class="detail__name">${escapeHtml(food.name)}</h2>
         <div class="detail__tags">${tagPillsHtml(food.tags)}</div>
         ${food.notes ? `<p class="detail__notes">${escapeHtml(food.notes)}</p>` : ''}

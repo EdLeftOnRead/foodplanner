@@ -76,7 +76,7 @@ deployed GitHub Pages URL.
       "tags": ["tagId", "tagId"],
       "notes": "free text",
       "ingredients": ["Tortilla", "Grilled chicken", "..."], // free text, not linked to other foods
-      "price": 6.50,                  // optional, whatever currency the user uses; shown with a "$" prefix.
+      "price": 6.50,                  // optional, in euros; shown with a "€" prefix.
                                        // For dishes it's a manual estimate the user enters themselves,
                                        // not computed from ingredient prices (ingredients are free text,
                                        // not linked to other food entries, so there's nothing to sum).
