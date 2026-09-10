@@ -98,6 +98,7 @@ input:focus, textarea:focus, select:focus, button:focus-visible {
   justify-content: center;
   padding: 24px;
 }
+.gate[hidden] { display: none; }
 .gate__card {
   max-width: 440px;
   width: 100%;
