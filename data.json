@@ -26,11 +26,6 @@
   ],
   "tags": [
     {
-      "id": "quick",
-      "name": "Quick",
-      "color": "#5B7B4F"
-    },
-    {
       "id": "protein",
       "name": "Protein",
       "color": "#A85C32"
