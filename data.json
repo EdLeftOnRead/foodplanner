@@ -21,8 +21,8 @@
         "fat": 0.4
       },
       "createdAt": "2026-09-10T00:20:40.869Z",
-      "updatedAt": "2026-09-10T01:14:27.795Z",
-      "price": 1
+      "updatedAt": "2026-09-10T01:52:01.499Z",
+      "price": 0.15
     },
     {
       "id": "374b26e4-acfe-47cb-ab3c-b2c9fb8e5057",
@@ -46,6 +46,29 @@
       },
       "createdAt": "2026-09-10T01:38:51.693Z",
       "updatedAt": "2026-09-10T01:39:14.823Z"
+    },
+    {
+      "id": "353cc29c-a1e1-4a42-ab52-7ba49e70e0c3",
+      "name": "Greek Yoghurt",
+      "type": "dish",
+      "image": "images/475e17b2-9889-4b8a-8199-2148f353f9bb.jpg",
+      "tags": [
+        "protein"
+      ],
+      "notes": "",
+      "ingredients": [],
+      "price": 1.15,
+      "serving": {
+        "label": "180g"
+      },
+      "nutrition": {
+        "calories": 80,
+        "protein": 7,
+        "carbs": 4,
+        "fat": 4
+      },
+      "createdAt": "2026-09-10T01:55:20.794Z",
+      "updatedAt": "2026-09-10T01:55:20.794Z"
     }
   ],
   "tags": [
