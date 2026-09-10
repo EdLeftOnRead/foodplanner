@@ -79,6 +79,7 @@ function renderGrid() {
         <div class="food-card__media">
           <div class="food-card__placeholder">${food.type === 'dish' ? '🍽' : '🥕'}</div>
           <img class="food-card__img" alt="" hidden />
+          ${food.price != null ? `<span class="food-card__price">$${food.price.toFixed(2)}</span>` : ''}
         </div>
         <div class="food-card__body">
           <h3 class="food-card__name">${escapeHtml(food.name)}</h3>
@@ -128,6 +129,7 @@ function openFoodDetail(id) {
       </div>
       <div class="detail__body">
         <span class="badge">${food.type === 'dish' ? 'Dish' : 'Ingredient'}</span>
+        ${food.price != null ? `<span class="pill" style="--chip-color:var(--paprika)">$${food.price.toFixed(2)}</span>` : ''}
         <h2 class="detail__name">${escapeHtml(food.name)}</h2>
         <div class="detail__tags">${tagPillsHtml(food.tags)}</div>
         ${food.notes ? `<p class="detail__notes">${escapeHtml(food.notes)}</p>` : ''}
@@ -212,6 +214,7 @@ function openFoodForm(existing) {
     ingredients: [],
     serving: { label: '' },
     nutrition: {},
+    price: undefined,
   };
   let pendingImageBase64 = null; // set if the user picked a new photo
   const selectedTags = new Set(food.tags || []);
@@ -230,6 +233,11 @@ function openFoodForm(existing) {
         <label class="radio"><input type="radio" name="type" value="ingredient" ${food.type !== 'dish' ? 'checked' : ''}/> Ingredient</label>
         <label class="radio"><input type="radio" name="type" value="dish" ${food.type === 'dish' ? 'checked' : ''}/> Dish</label>
       </div>
+
+      <label class="field">
+        <span>Price<span id="price-hint" class="muted"></span></span>
+        <input type="number" min="0" step="0.01" name="price" value="${food.price ?? ''}" placeholder="0.00" />
+      </label>
 
       <label class="field">
         <span>Photo</span>
@@ -284,6 +292,7 @@ function openFoodForm(existing) {
   function refreshIngredientsVisibility() {
     const type = node.querySelector('input[name="type"]:checked').value;
     node.querySelector('#ingredients-field').hidden = type !== 'dish';
+    node.querySelector('#price-hint').textContent = type === 'dish' ? ' (your estimate)' : '';
   }
   node.querySelectorAll('input[name="type"]').forEach((r) => r.addEventListener('change', refreshIngredientsVisibility));
   refreshIngredientsVisibility();
@@ -415,6 +424,7 @@ function openFoodForm(existing) {
         tags: [...selectedTags],
         notes: fd.get('notes').trim(),
         ingredients: fd.get('type') === 'dish' ? ingredients.map((i) => i.trim()).filter(Boolean) : [],
+        price: num(fd.get('price')),
         serving: { label: fd.get('servingLabel').trim() },
         nutrition: {
           calories: num(fd.get('calories')),
