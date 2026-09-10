@@ -1,12 +1,44 @@
 {
   "version": 1,
-  "foods": [],
+  "foods": [
+    {
+      "id": "46c6ec57-1f6b-4ec1-8c4d-16a329ec8db2",
+      "name": "Banana",
+      "type": "ingredient",
+      "image": "images/5ccb3260-2041-4365-93a0-f62ecd51c905.jpg",
+      "tags": [],
+      "notes": "",
+      "ingredients": [],
+      "serving": {
+        "label": ""
+      },
+      "nutrition": {
+        "calories": 105,
+        "protein": 1
+      },
+      "createdAt": "2026-09-10T00:20:40.869Z",
+      "updatedAt": "2026-09-10T00:20:40.869Z"
+    }
+  ],
   "tags": [
-    { "id": "quick", "name": "Quick", "color": "#5B7B4F" },
-    { "id": "protein", "name": "Protein", "color": "#A85C32" }
+    {
+      "id": "quick",
+      "name": "Quick",
+      "color": "#5B7B4F"
+    },
+    {
+      "id": "protein",
+      "name": "Protein",
+      "color": "#A85C32"
+    }
   ],
   "plans": [],
   "settings": {
-    "dailyTargets": { "calories": 2000, "protein": 150, "carbs": 225, "fat": 70 }
+    "dailyTargets": {
+      "calories": 2000,
+      "protein": 150,
+      "carbs": 225,
+      "fat": 70
+    }
   }
 }
