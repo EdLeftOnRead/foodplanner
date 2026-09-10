@@ -21,7 +21,31 @@
         "fat": 0.4
       },
       "createdAt": "2026-09-10T00:20:40.869Z",
-      "updatedAt": "2026-09-10T00:40:52.314Z"
+      "updatedAt": "2026-09-10T01:14:27.795Z",
+      "price": 1
+    },
+    {
+      "id": "374b26e4-acfe-47cb-ab3c-b2c9fb8e5057",
+      "name": "Egg - 1",
+      "type": "ingredient",
+      "image": "images/98b9b454-9ed5-41e3-9df4-df79d601ce47.jpg",
+      "tags": [
+        "protein"
+      ],
+      "notes": "",
+      "ingredients": [],
+      "price": 0.3,
+      "serving": {
+        "label": "~50g"
+      },
+      "nutrition": {
+        "calories": 65,
+        "protein": 6,
+        "carbs": 4.3,
+        "fat": 0.4
+      },
+      "createdAt": "2026-09-10T01:38:51.693Z",
+      "updatedAt": "2026-09-10T01:39:14.823Z"
     }
   ],
   "tags": [
